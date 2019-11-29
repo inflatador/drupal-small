@@ -121,7 +121,7 @@ parameters:
     immutable: true
   ansible_source:
     type: string
-    default: http://catalog.rs-heat.com/ansible-roles/ansible-roles.tar.gz
+    default: http://383834cd3264a0b55ee4-5931e3933cc545c6a47fcbb96629b44b.r83.cf5.rackcdn.com/ansible-roles.tar.gz
     label: Ansible Tarball
     description: The Ansible Roles will be pulled from the location provided
     immutable: true
@@ -157,6 +157,17 @@ resources:
       - name: drupal
         password: { get_attr: [database_pass, value] }
         databases: [drupal, phpmyadmin]
+
+  # Cloud Database backup
+  drupal_db_backup:
+    type: Rackspace::CloudDatabase::ScheduledBackup
+    properties:
+      source:
+        id: { get_resource: drupal_database }
+        type: instance
+      day_of_week: 6
+      full_backup_retention: 2
+
   #Software Configurations
   upload_role_config:
     type: OS::Heat::SoftwareConfig
@@ -186,6 +197,7 @@ resources:
           roles:
           - common
           - nginx
+          - php
           - php-fpm
           - composer
           - drupal
